@@ -40,6 +40,8 @@
 #include "platformservice.h"
 #include "syslink.h"
 #include "crtp_localization_service.h"
+#include "bdsensors.h"					//BD added
+
 
 static bool isInit;
 
@@ -61,6 +63,7 @@ void commInit(void)
   crtpserviceInit();
   platformserviceInit();
   logInit();
+  bdsensorsInit();  //initialize the bd external sensors communication task
   paramInit();
   locSrvInit();
 

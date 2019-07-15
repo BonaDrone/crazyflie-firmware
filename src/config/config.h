@@ -77,6 +77,7 @@
 #define ZRANGER_TASK_PRI        2
 #define ZRANGER2_TASK_PRI       2
 #define LOG_TASK_PRI            1
+#define BD_SENSORS_TASK_PRI		1 //misma prioridad que el logging
 #define MEM_TASK_PRI            1
 #define PARAM_TASK_PRI          1
 #define PROXIMITY_TASK_PRI      0
@@ -104,6 +105,7 @@
 #define CRTP_RX_TASK_NAME       "CRTP-RX"
 #define CRTP_RXTX_TASK_NAME     "CRTP-RXTX"
 #define LOG_TASK_NAME           "LOG"
+#define BD_SENSORS_TASK_NAME 	"BDSENSORS"  //BD added
 #define MEM_TASK_NAME           "MEM"
 #define PARAM_TASK_NAME         "PARAM"
 #define SENSORS_TASK_NAME       "SENSORS"
@@ -132,6 +134,7 @@
 #define CRTP_RX_TASK_STACKSIZE        (2* configMINIMAL_STACK_SIZE)
 #define CRTP_RXTX_TASK_STACKSIZE      configMINIMAL_STACK_SIZE
 #define LOG_TASK_STACKSIZE            configMINIMAL_STACK_SIZE
+#define BD_SENSORS_TASK_STACKSIZE     configMINIMAL_STACK_SIZE   // BD added
 #define MEM_TASK_STACKSIZE            (2 * configMINIMAL_STACK_SIZE)
 #define PARAM_TASK_STACKSIZE          configMINIMAL_STACK_SIZE
 #define SENSORS_TASK_STACKSIZE        (2 * configMINIMAL_STACK_SIZE)

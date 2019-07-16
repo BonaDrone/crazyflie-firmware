@@ -5,6 +5,11 @@
  *      Author: bitcraze
  */
 
+#include <string.h>
+#include <errno.h>
+#include <stdint.h>
+#include <stdbool.h>
+
 /* FreeRtos includes */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -45,7 +50,7 @@ void bdsensorsInit(void) {
 			NULL, BD_SENSORS_TASK_PRI, NULL);
 
 	isInit = true;
-    //ledseqRun(LINK_LED, seq_testPassed);
+    ledseqRun(LINK_LED, seq_testPassed);
 
 }
 
@@ -54,9 +59,19 @@ void bdsensorsTask(void * prm) {
 
 	while (1) {
 		crtpReceivePacketBlock(CRTP_PORT_BD, &p);
+		ledseqRun(SYS_LED, seq_testPassed);
+		ledseqRun(LINK_LED, seq_testPassed);
+		static float hardFloat = 1.5;
 
 		xSemaphoreTake(bdsensorsLock, portMAX_DELAY);
-		//ledseqRun(SYS_LED, seq_testPassed);
+
+        memcpy(&p.data[0], (char*)&hardFloat, 4);
+		p.size=4;
+		crtpSendPacket(&p);
+		xSemaphoreGive(bdsensorsLock);
+
+
+
 
 		/*
 		 xSemaphoreTake(logLock, portMAX_DELAY);

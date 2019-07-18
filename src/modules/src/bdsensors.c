@@ -23,10 +23,16 @@
 #include "worker.h"
 #include "num.h"
 #include "ledseq.h"
+#include "pm.h"
 
 #include "console.h"
 #include "cfassert.h"
 #include "debug.h"
+
+enum cmd_message{
+	HardFloat = 0,
+	BatteryLevel = 1
+};
 
 static CRTPPacket p;
 
@@ -36,6 +42,8 @@ static xSemaphoreHandle bdsensorsLock;
 
 //Private functions
 static void bdsensorsTask(void * prm);
+static void bdsensorsProcess(int cmd_sensor);
+
 
 void bdsensorsInit(void) {
 
@@ -59,28 +67,45 @@ void bdsensorsTask(void * prm) {
 
 	while (1) {
 		crtpReceivePacketBlock(CRTP_PORT_BD, &p);
-		ledseqRun(SYS_LED, seq_testPassed);
-		ledseqRun(LINK_LED, seq_testPassed);
-		static float hardFloat = 1.5;
 
 		xSemaphoreTake(bdsensorsLock, portMAX_DELAY);
-
-        memcpy(&p.data[0], (char*)&hardFloat, 4);
-		p.size=4;
-		crtpSendPacket(&p);
+		bdsensorsProcess(p.data[0]);
 		xSemaphoreGive(bdsensorsLock);
 
-
-
-
-		/*
-		 xSemaphoreTake(logLock, portMAX_DELAY);
-		 if (p.channel==TOC_CH)
-		 logTOCProcess(p.data[0]);
-		 if (p.channel==CONTROL_CH)
-		 logControlProcess();
-		 xSemaphoreGive(logLock);
-		 */
 	}
 }
+
+/*
+ * This function evaluates the message received from the Bonadrone Platform and send the adequate
+ * input: cmd_sensor  sensor to be read
+ */
+void bdsensorsProcess(int cmd_sensor){
+
+	switch (cmd_sensor)
+	{
+	case HardFloat:
+	{
+		float hardFloat = hardFloat = 1.5;
+		ledseqRun(SYS_LED, seq_testPassed);
+		memcpy(&p.data[1], (char*)&hardFloat, 4);  //as in line 145 from info.c
+		//(char*) makes the pointer behave like a char pointer
+		p.size=5;
+		crtpSendPacket(&p);
+		break;
+	}
+	case BatteryLevel:
+	{
+		float battery = pmGetBatteryVoltage();
+		ledseqRun(LINK_LED, seq_testPassed);
+		memcpy(&p.data[1], (char*)&battery, 4);
+		p.size=5;
+		crtpSendPacket(&p);
+		break;
+	}
+	default:
+		break;
+	}
+
+}
+
 

@@ -40,7 +40,7 @@ const static setpoint_t nullSetpoint;
 const static int priorityDisable = COMMANDER_PRIORITY_DISABLE;
 
 static uint32_t lastUpdate;
-static bool enableHighLevel = false;
+static bool enableHighLevel = true;
 
 QueueHandle_t setpointQueue;
 QueueHandle_t priorityQueue;

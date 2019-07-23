@@ -40,5 +40,6 @@ bool sensorsBmi088Bmp388ReadMag(Axis3f *mag);
 bool sensorsBmi088Bmp388ReadBaro(baro_t *baro);
 void sensorsBmi088Bmp388SetAccMode(accModes accMode);
 void sensorsBmi088Bmp388DataAvailableCallback(void);
+float getPressure(void);
 
 #endif // __SENSORS_BMI088_BMP388_H__

@@ -2,7 +2,7 @@
  * bd_sensors.c
  *
  *  Created on: Jul 15, 2019
- *      Author: bitcraze
+ *      Author: AMB
  */
 
 #include <string.h>
@@ -24,14 +24,16 @@
 #include "num.h"
 #include "ledseq.h"
 #include "pm.h"
-
+#include "sensors_bmi088_bmp388.h"
 #include "console.h"
 #include "cfassert.h"
 #include "debug.h"
 
 enum cmd_message{
-	HardFloat = 0,
-	BatteryLevel = 1
+	Connection = 0,
+	BatteryLevel = 1,
+	Barometer = 2
+
 };
 
 static CRTPPacket p;
@@ -76,32 +78,40 @@ void bdsensorsTask(void * prm) {
 }
 
 /*
- * This function evaluates the message received from the Bonadrone Platform and send the adequate
+ * This function evaluates the message received from the Bonadrone Platform and send the adequate answer
  * input: cmd_sensor  sensor to be read
  */
 void bdsensorsProcess(int cmd_sensor){
 
 	switch (cmd_sensor)
 	{
-	case HardFloat:
+	case Connection:
 	{
-		float hardFloat = hardFloat = 1.5;
+		soundSetEffect(SND_STARTUP);
 		ledseqRun(SYS_LED, seq_testPassed);
-		memcpy(&p.data[1], (char*)&hardFloat, 4);  //as in line 145 from info.c
-		//(char*) makes the pointer behave like a char pointer
-		p.size=5;
-		crtpSendPacket(&p);
 		break;
 	}
 	case BatteryLevel:
 	{
 		float battery = pmGetBatteryVoltage();
-		ledseqRun(LINK_LED, seq_testPassed);
+		//ledseqRun(LINK_LED, seq_testPassed);
 		memcpy(&p.data[1], (char*)&battery, 4);
 		p.size=5;
 		crtpSendPacket(&p);
 		break;
 	}
+	case Barometer:
+	{
+		/*struct bmp3_data data;
+		baro_t baro;
+		sensorsPeekBaro(&baro);*/
+		float pressure = getPressure();
+		memcpy(&p.data[1], (char*)&(pressure), 4);
+		p.size=5;
+		crtpSendPacket(&p);
+		break;
+	}
+
 	default:
 		break;
 	}

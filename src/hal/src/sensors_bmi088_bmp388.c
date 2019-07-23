@@ -551,6 +551,21 @@ void sensorsBmi088Bmp388Init(void)
   sensorsTaskInit();
 }
 
+float getPressure(void){
+	uint8_t sensor_comp;
+
+	/* Variable used to store the compensated data */
+	struct bmp3_data data;
+
+	/* Sensor component selection */
+	sensor_comp = BMP3_PRESS | BMP3_TEMP;
+
+	bmp3_get_sensor_data(sensor_comp, &data, &bmp388Dev);
+	return data.pressure;
+}
+
+
+
 // TODO: Implement proper test
 bool sensorsBmi088Bmp388Test(void)
 {

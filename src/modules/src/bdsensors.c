@@ -87,7 +87,6 @@ void bdsensorsProcess(int cmd_sensor){
 	{
 	case Connection:
 	{
-		soundSetEffect(SND_STARTUP);
 		ledseqRun(SYS_LED, seq_testPassed);
 		break;
 	}

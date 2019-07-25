@@ -48,7 +48,7 @@ static void plan_takeoff_or_landing(struct planner *p, struct vec pos, float yaw
 
 	piecewise_plan_7th_order_no_jerk(&planned_trajectory, duration,
 		pos,         yaw, vzero(), 0, vzero(),
-		takeoff_pos,   0, vzero(), 0, vzero());
+		takeoff_pos,   yaw, vzero(), 0, vzero());
 }
 
 // ----------------- //

@@ -71,6 +71,8 @@
 #include "param.h"
 #include "physicalConstants.h"
 
+#include "ledseq.h"
+
 
 // #define KALMAN_USE_BARO_UPDATE
 
@@ -217,7 +219,11 @@ static inline float arm_sqrt(float32_t in)
 void estimatorKalman(state_t *state, sensorData_t *sensors, control_t *control, const uint32_t tick)
 {
   // If the client (via a parameter update) triggers an estimator reset:
-  if (coreData.resetEstimation) { estimatorKalmanInit(); coreData.resetEstimation = false; }
+  if (coreData.resetEstimation) {
+    estimatorKalmanInit();
+    ledseqRun(LOWBAT_LED, seq_testPassed);
+    coreData.resetEstimation = false;
+  }
 
   // Tracks whether an update to the state has been made, and the state therefore requires finalization
   bool doneUpdate = false;

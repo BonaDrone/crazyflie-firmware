@@ -28,13 +28,19 @@
 #include "console.h"
 #include "cfassert.h"
 #include "debug.h"
+#include "deck.h"
 
 enum cmd_message{
-	Connection = 0,
+	Connection   = 0,
 	BatteryLevel = 1,
-	Barometer = 2
+	Barometer    = 2,
+	LED 		 =3
 
 };
+
+//Variables for led on the deck
+bool LedInit = false;
+uint8_t LedState = 0x01;
 
 static CRTPPacket p;
 
@@ -108,6 +114,23 @@ void bdsensorsProcess(int cmd_sensor){
 		memcpy(&p.data[1], (char*)&(pressure), 4);
 		p.size=5;
 		crtpSendPacket(&p);
+		break;
+	}
+	case LED:
+	{
+		float sendmssg;
+		if(!LedInit){
+			pinMode(DECK_GPIO_IO1,OUTPUT);
+			LedInit = true;
+		}
+		sendmssg = (float)LedState;
+		memcpy(&p.data[1], (char*)&sendmssg, 4);
+		p.size=5;
+		crtpSendPacket(&p);
+		digitalWrite(DECK_GPIO_IO1,LedState);
+		LedState ^= 0x01;
+		ledseqRun(SYS_LED, seq_testPassed);
+
 		break;
 	}
 

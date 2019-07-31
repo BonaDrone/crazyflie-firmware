@@ -34,12 +34,14 @@ enum cmd_message{
 	Connection   = 0,
 	BatteryLevel = 1,
 	Barometer    = 2,
-	LED 		 =3
+	SwitchLED 		 = 3,
+	ReadADC			 = 4
 
 };
 
 //Variables for led on the deck
 bool LedInit = false;
+bool DeckADCInint = false;
 uint8_t LedState = 0x01;
 
 static CRTPPacket p;
@@ -116,7 +118,7 @@ void bdsensorsProcess(int cmd_sensor){
 		crtpSendPacket(&p);
 		break;
 	}
-	case LED:
+	case SwitchLED:
 	{
 		float sendmssg;
 		if(!LedInit){
@@ -131,6 +133,19 @@ void bdsensorsProcess(int cmd_sensor){
 		LedState ^= 0x01;
 		ledseqRun(SYS_LED, seq_testPassed);
 
+		break;
+	}
+	case ReadADC:
+	{
+		float voltage;
+		if(!DeckADCInint){
+			pinMode(DECK_GPIO_TX2,INPUT);
+			DeckADCInint = true;
+		}
+		voltage = analogReadVoltage(DECK_GPIO_TX2);
+		memcpy(&p.data[1], (char*)&voltage, 4);
+		p.size=5;
+		crtpSendPacket(&p);
 		break;
 	}
 
